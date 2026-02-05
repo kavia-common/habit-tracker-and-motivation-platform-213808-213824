@@ -1,48 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useCallback, useMemo } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
+
+import { getHealth } from "./api/client";
+import { useAsync } from "./hooks/useAsync";
+
+import { AppShell } from "./components/AppShell";
+import { DashboardPage } from "./pages/DashboardPage";
+import { PlaceholderPage } from "./pages/PlaceholderPage";
 
 // PUBLIC_INTERFACE
 function App() {
-  const [theme, setTheme] = useState('light');
+  /** Main application entry component. */
+  const healthCall = useAsync(getHealth, [], { immediate: true });
 
-  // Effect to apply theme to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+  const backendStatus = useMemo(() => {
+    if (healthCall.isLoading || healthCall.isIdle) return { ok: false, state: "connecting" };
+    if (healthCall.isError) return { ok: false, state: "error", error: healthCall.error };
+    return { ok: true, state: "ok", value: healthCall.value };
+  }, [healthCall.isLoading, healthCall.isIdle, healthCall.isError, healthCall.error, healthCall.value]);
 
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  const retryBackend = useCallback(() => {
+    healthCall.execute();
+  }, [healthCall]);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <AppShell backendStatus={backendStatus} onRetryBackend={retryBackend}>
+        <Routes>
+          <Route path="/" element={<DashboardPage />} />
+          <Route
+            path="/habits"
+            element={<PlaceholderPage title="Habits" description="Create, schedule, and track habits." />}
+          />
+          <Route
+            path="/groups"
+            element={<PlaceholderPage title="Groups" description="Accountability groups & shared challenges." />}
+          />
+          <Route
+            path="/achievements"
+            element={<PlaceholderPage title="Achievements" description="Badges, rewards, and shareable milestones." />}
+          />
+          <Route
+            path="/activity"
+            element={<PlaceholderPage title="Activity" description="Friend feed and community highlights." />}
+          />
+          <Route
+            path="*"
+            element={<PlaceholderPage title="Not found" description="This route does not exist (yet)." />}
+          />
+        </Routes>
+      </AppShell>
+    </BrowserRouter>
   );
 }
 
