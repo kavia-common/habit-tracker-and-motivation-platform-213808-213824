@@ -8,11 +8,18 @@ const DEFAULT_BASE_URL = ""; // same-origin by default
 function getApiBaseUrl() {
   /**
    * CRA exposes env vars prefixed with REACT_APP_.
-   * We support both:
-   * - REACT_APP_API_BASE_URL (preferred)
-   * - REACT_APP_BACKEND_URL (provided in this workspace's env list)
+   *
+   * For this project we standardize on:
+   *   - REACT_APP_BACKEND_URL
+   *
+   * Backwards compatibility:
+   *   - REACT_APP_API_BASE_URL (older name)
    */
-  const raw = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_BACKEND_URL || DEFAULT_BASE_URL;
+  const raw =
+    process.env.REACT_APP_BACKEND_URL ||
+    process.env.REACT_APP_API_BASE_URL ||
+    DEFAULT_BASE_URL;
+
   return String(raw).replace(/\/*$/, "");
 }
 
