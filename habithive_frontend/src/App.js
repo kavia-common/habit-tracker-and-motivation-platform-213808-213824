@@ -7,6 +7,10 @@ import { useAsync } from "./hooks/useAsync";
 
 import { AppShell } from "./components/AppShell";
 import { DashboardPage } from "./pages/DashboardPage";
+import { HabitsPage } from "./pages/HabitsPage";
+import { GroupsPage } from "./pages/GroupsPage";
+import { AchievementsPage } from "./pages/AchievementsPage";
+import { ActivityPage } from "./pages/ActivityPage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
 
 // PUBLIC_INTERFACE
@@ -29,22 +33,10 @@ function App() {
       <AppShell backendStatus={backendStatus} onRetryBackend={retryBackend}>
         <Routes>
           <Route path="/" element={<DashboardPage />} />
-          <Route
-            path="/habits"
-            element={<PlaceholderPage title="Habits" description="Create, schedule, and track habits." />}
-          />
-          <Route
-            path="/groups"
-            element={<PlaceholderPage title="Groups" description="Accountability groups & shared challenges." />}
-          />
-          <Route
-            path="/achievements"
-            element={<PlaceholderPage title="Achievements" description="Badges, rewards, and shareable milestones." />}
-          />
-          <Route
-            path="/activity"
-            element={<PlaceholderPage title="Activity" description="Friend feed and community highlights." />}
-          />
+          <Route path="/habits" element={<HabitsPage />} />
+          <Route path="/groups" element={<GroupsPage />} />
+          <Route path="/achievements" element={<AchievementsPage />} />
+          <Route path="/activity" element={<ActivityPage />} />
           <Route
             path="*"
             element={<PlaceholderPage title="Not found" description="This route does not exist (yet)." />}
